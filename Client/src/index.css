@@ -1,0 +1,141 @@
+@import url("https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Space+Grotesk:wght@300..700&family=Manrope:wght@200..800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* --- Vicolo Creative North Star: The Living Journal --- */
+  --color-vicolo-paper: #FBF9F4;
+  --color-vicolo-ink: #1B1C19;
+  --color-vicolo-ochre: #E3A032;
+  --color-vicolo-ink-wash: #5F5E5E;
+  --color-vicolo-outline: #837563;
+  --color-vicolo-outline-light: #D5C4AF;
+  --color-vicolo-surface: #F0EEE9;
+  
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-script: "Pinyon Script", cursive;
+
+  /* Mapping to Tailwind defaults where applicable */
+  --color-background: var(--color-vicolo-paper);
+  --color-primary: var(--color-vicolo-ochre);
+  --color-on-surface: var(--color-vicolo-ink);
+  --color-secondary: var(--color-vicolo-ink-wash);
+}
+
+/* ─── Global Base ─── */
+:root {
+  background-color: var(--color-vicolo-paper);
+  color: var(--color-vicolo-ink);
+  font-family: var(--font-body);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ─── Paper Texture Overlay ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+/* ─── SVG Filters for Hand-Drawn FX ─── */
+/* These are hidden in the DOM but used by CSS masks/filters */
+.sketch-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ─── Typography ─── */
+h1, h2, h3 {
+  font-family: var(--font-headline);
+  letter-spacing: -0.02em;
+}
+
+.signature {
+  font-family: var(--font-script);
+}
+
+/* ─── Hand-Drawn Utilities ─── */
+
+/* 1. Rough Ink Border Wrapper */
+.rough-border {
+  position: relative;
+  border: none !important;
+}
+.rough-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 2px solid var(--color-vicolo-ink);
+  pointer-events: none;
+  border-radius: 4px;
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5'/%3E%3CfeDisplacementMap scale='4' in='SourceGraphic'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23rough)'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5'/%3E%3CfeDisplacementMap scale='4' in='SourceGraphic'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23rough)'/%3E%3C/svg%3E");
+}
+
+/* 2. Deckle Edge (Irregular paper edge) */
+.deckle-edge {
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='deckle'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='6'/%3E%3CfeDisplacementMap scale='10' in='SourceGraphic'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23deckle)' fill='white'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='deckle'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='6'/%3E%3CfeDisplacementMap scale='10' in='SourceGraphic'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23deckle)' fill='white'/%3E%3C/svg%3E");
+}
+
+/* 3. Sketch Underline */
+.sketch-line {
+  position: relative;
+  display: inline-block;
+}
+.sketch-line::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: currentColor;
+  transform: rotate(-0.5deg);
+  opacity: 0.8;
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='line'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.1' numOctaves='2'/%3E%3CfeDisplacementMap scale='2' in='SourceGraphic'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23line)'/%3E%3C/svg%3E");
+}
+
+/* 4. Margin Note Accent */
+.margin-note {
+  font-family: var(--font-script);
+  transform: rotate(-4deg);
+  font-size: 1.5rem;
+  color: var(--color-vicolo-ochre);
+  display: inline-block;
+  opacity: 0.9;
+}
+
+/* 5. Vellum (Glassmorphism for Sketches) */
+.vellum-glass {
+  background: rgba(251, 249, 244, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* 6. Ink Shadow (Soft ambient occlusion) */
+.ink-shadow {
+  box-shadow: 0 10px 40px rgba(27, 28, 25, 0.05);
+}
+
+/* --- Tailwind Overrides & Utilities --- */
+.ink-bleed {
+  filter: url(#inkBleedFilter); /* Placeholder for advanced SVG filter */
+}
