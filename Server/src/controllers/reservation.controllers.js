@@ -45,3 +45,39 @@ export const cancelReservation = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllReservations = async (req, res) => {
+  try {
+    const reservations = await Reservation.find()
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateReservationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const reservationId = req.params.id;
+    
+    if (!["pending", "confirmed", "cancelled"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const reservation = await Reservation.findByIdAndUpdate(
+      reservationId,
+      { status },
+      { new: true }
+    );
+
+    if (!reservation) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    res.status(200).json({ message: "Reservation status updated", reservation });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

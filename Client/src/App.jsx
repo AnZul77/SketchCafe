@@ -14,6 +14,11 @@ import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import AuthGuard from "./components/AuthGuard";
+import AdminGuard from "./components/AdminGuard";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminMenu from "./pages/AdminMenu";
+import AdminOrders from "./pages/AdminOrders";
+import AdminReservations from "./pages/AdminReservations";
 
 export default function App() {
   const location = useLocation();
@@ -40,6 +45,12 @@ export default function App() {
             <Route path="/cart" element={<AuthGuard><Cart /></AuthGuard>} />
             <Route path="/checkout" element={<AuthGuard><Checkout /></AuthGuard>} />
             <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+            <Route path="/admin/menu" element={<AdminGuard><AdminMenu /></AdminGuard>} />
+            <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+            <Route path="/admin/reservations" element={<AdminGuard><AdminReservations /></AdminGuard>} />
           </Routes>
         </AnimatePresence>
       </main>

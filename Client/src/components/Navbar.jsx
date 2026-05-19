@@ -79,6 +79,19 @@ export default function Navbar() {
               <span className="hidden lg:block">{user ? user.name.split(' ')[0] : 'Passport'}</span>
             </NavLink>
 
+            {user?.role === 'admin' && (
+              <NavLink 
+                to="/admin" 
+                className={({ isActive }) => 
+                  `px-6 py-2 bg-transparent text-vicolo-ink border border-vicolo-ink font-headline text-xs uppercase tracking-widest transition-all duration-500 rough-border ${
+                    isActive ? 'bg-vicolo-ink text-vicolo-paper' : 'hover:bg-vicolo-ink hover:text-vicolo-paper'
+                  }`
+                }
+              >
+                Admin
+              </NavLink>
+            )}
+
             <NavLink 
               to="/reservations" 
               className={({ isActive }) => 
