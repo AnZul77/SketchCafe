@@ -20,10 +20,10 @@ app.use(express.json());
 
 app.use(helmet());
 
-app.use("/api/auth", authRouter);
-app.use("/api/reservations", reservationRouter);
-app.use("/api/menu", menuRouter);
-app.use("/api/orders", orderRouter);
+app.use("/auth", authRouter);
+app.use("/reservations", reservationRouter);
+app.use("/menu", menuRouter);
+app.use("/orders", orderRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello Cafe Backend Running !");
