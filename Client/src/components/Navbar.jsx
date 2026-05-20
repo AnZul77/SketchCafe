@@ -1,10 +1,16 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 
 export default function Navbar() {
-  const { cart, user } = useApp();
+  const { cart, user, logout } = useApp();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
     <nav className="fixed top-0 left-0 w-full z-100 flex justify-center px-4 py-4 pointer-events-none">
@@ -78,6 +84,16 @@ export default function Navbar() {
               </div>
               <span className="hidden lg:block">{user ? user.name.split(' ')[0] : 'Passport'}</span>
             </NavLink>
+
+            {user && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-5 py-2 border border-vicolo-ink/10 text-vicolo-ink/50 hover:text-vicolo-paper hover:bg-vicolo-ink transition-all duration-300 font-headline text-[10px] uppercase tracking-widest rough-border"
+              >
+                Sign Out
+              </button>
+            )}
 
             {user?.role === 'admin' && (
               <NavLink 

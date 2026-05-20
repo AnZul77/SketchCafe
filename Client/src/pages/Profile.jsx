@@ -8,6 +8,11 @@ export default function Profile() {
   const { user, reservations, orders, logout, fetchMyReservations, fetchMyOrders } = useApp();
   const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
+
   useEffect(() => {
     if (!user) navigate("/login");
     else {
@@ -32,7 +37,7 @@ export default function Profile() {
             </h1>
           </div>
           <button 
-            onClick={logout}
+            onClick={handleLogout}
             className="font-headline text-[10px] uppercase tracking-[0.5em] text-vicolo-ink/30 hover:text-red-800 transition-colors border-b border-vicolo-ink/5 pb-1"
           >
             Close Passport
