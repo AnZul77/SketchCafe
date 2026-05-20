@@ -20,8 +20,6 @@ app.use(express.json());
 
 app.use(helmet());
 
-app.use(arcjetMiddleware);
-
 app.use("/api/auth", authRouter);
 app.use("/api/reservations", reservationRouter);
 app.use("/api/menu", menuRouter);

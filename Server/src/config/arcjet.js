@@ -1,5 +1,7 @@
 import arcjet, { tokenBucket, shield, detectBot } from "@arcjet/node";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const aj = arcjet({
   key: process.env.ARCJET_KEY,
 
@@ -7,19 +9,21 @@ export const aj = arcjet({
 
   rules: [
     shield({
-      mode: "LIVE",
+      mode: isProduction ? "LIVE" : "DRY_RUN",
     }),
 
     detectBot({
-      mode: "LIVE",
-      allow: ["CATEGORY:SEARCH_ENGINE"],
+      mode: isProduction ? "LIVE" : "DRY_RUN",
+
+      allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:MONITOR"],
     }),
 
     tokenBucket({
-      mode: "LIVE",
-      refillRate: 10,
-      interval: 10,
-      capacity: 20,
+      mode: isProduction ? "LIVE" : "DRY_RUN",
+
+      refillRate: 20,
+      interval: 60,
+      capacity: 50,
     }),
   ],
 });
