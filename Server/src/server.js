@@ -24,7 +24,7 @@ app.use("/auth", authRouter);
 app.use("/reservations", reservationRouter);
 app.use("/menu", menuRouter);
 app.use("/orders", orderRouter);
-app.use("/payment", paymentRouter);
+app.use("/api/payment", paymentRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello Cafe Backend Running !");
