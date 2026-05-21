@@ -30,50 +30,19 @@ export default function Checkout() {
       const razorpayOrderId = response.data.orderId;
       console.log("RAZORPAY KEY:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: Math.round(payableAmount * 100),
-        currency: "INR",
-        name: "Vicolo",
-        description: `Table ${formData.tableNumber} order`,
-        order_id: razorpayOrderId,
-        prefill: user
-          ? {   
-              name: user.name,
-              email: user.email,
-            }
-          : undefined,
-        theme: {
-          color: "#1b1c19",
-        },
-        modal: {
-          ondismiss: () => {
-            setStep("form");
-            showPopup("Payment was cancelled before confirmation.");
-          },
-        },
-        handler: async (razorpayResponse) => {
-          try {
-            const verifyRes = await verifyRazorpayPayment({
-              razorpay_order_id: razorpayResponse.razorpay_order_id,
-              razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-              razorpay_signature: razorpayResponse.razorpay_signature,
-            });
+     const options = {
+  key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+  amount: Math.round(payableAmount * 100),
+  currency: "INR",
+  name: "Vicolo",
+  description: "Order Payment",
+  order_id: razorpayOrderId,
 
-            if (verifyRes.data?.success) {
-              await placeOrder(formData.tableNumber,response);
-              setStep("success");
-            } else {
-              setStep("form");
-              showPopup(verifyRes.data?.message || "Payment verification failed.");
-            }
-          } catch (orderError) {
-            console.error(orderError);
-            setStep("form");
-            showPopup(orderError.response?.data?.message || "Payment verification or order creation failed.");
-          }
-        },
-      };
+  handler: function (response) {
+    console.log(response);
+    alert("Payment success");
+  },
+};
 
       const razorpayInstance = new window.Razorpay(options);
       razorpayInstance.open();
