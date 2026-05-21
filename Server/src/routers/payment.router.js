@@ -25,8 +25,14 @@ router.post("/create-order", async (req, res) => {
     const { amount } = req.body;
     const razorpay = createRazorpayClient();
 
+    const amountInPaise = Math.round(Number(amount) * 100);
+
+    if (!Number.isFinite(amountInPaise) || amountInPaise <= 0) {
+      return res.status(400).json({ error: "Invalid order amount" });
+    }
+
     const options = {
-      amount: amount * 100,
+      amount: amountInPaise,
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     };
@@ -35,6 +41,10 @@ router.post("/create-order", async (req, res) => {
     res.json({ orderId: order.id });
   } catch (err) {
     console.error("Error creating Razorpay order:", err);
+    console.error("FULL RAZORPAY ERROR:");
+    console.error(err);
+    console.error(err.error);
+    console.error(err.description);
     res.status(500).json({ error: "Failed to create order" });
   }
 });

@@ -3,18 +3,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { DeckleCard } from "../components/VicoloBase";
-import API, { createRazorpayOrder, loadRazorpayScript, verifyRazorpayPayment } from "../services/api";
+import { createRazorpayOrder, loadRazorpayScript, verifyRazorpayPayment } from "../services/api";
 
 export default function Checkout() {
   const { cart, placeOrder, orders, user, showPopup } = useApp();
-  const [step, setStep] = useState("form"); // "form", "processing", "success"
-  
+  const [step, setStep] = useState("form");
+
   const [formData, setFormData] = useState({
     tableNumber: ""
   });
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const payableAmount = Number((subtotal * 1.1).toFixed(2));
+
+  const getErrorMessage = (err, fallbackMessage) => {
+    return err?.response?.data?.message || err?.message || fallbackMessage;
+  };
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
@@ -28,28 +32,60 @@ export default function Checkout() {
 
       const response = await createRazorpayOrder(payableAmount);
       const razorpayOrderId = response.data.orderId;
-      console.log("RAZORPAY KEY:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 
-     const options = {
-  key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-  amount: Math.round(payableAmount * 100),
-  currency: "INR",
-  name: "Vicolo",
-  description: "Order Payment",
-  order_id: razorpayOrderId,
+      const paymentAmountPaise = Math.round(payableAmount * 100);
 
-  handler: function (response) {
-    console.log(response);
-    alert("Payment success");
-  },
-};
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: paymentAmountPaise,
+        currency: "INR",
+        name: "Vicolo",
+        description: `Table ${formData.tableNumber} order`,
+        order_id: razorpayOrderId,
+        prefill: {
+          name: user?.name || "Guest",
+          email: user?.email || "guest@test.com",
+          contact: "+919999905408",
+        },
+        method: "upi",
+        theme: {
+          color: "#1b1c19",
+        },
+        handler: async function (paymentResponse) {
+          try {
+            const verificationResponse = await verifyRazorpayPayment(paymentResponse);
+
+            if (!verificationResponse.data?.success) {
+              throw new Error("Payment verification failed.");
+            }
+
+            await placeOrder(formData.tableNumber, paymentResponse);
+            setStep("success");
+            showPopup("Payment successful. Your order is confirmed.");
+          } catch (verificationErr) {
+            console.error("Payment verification failed", verificationErr);
+            setStep("form");
+            showPopup(getErrorMessage(verificationErr, "Payment verification failed. Please try again."));
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setStep("form");
+          },
+        },
+      };
 
       const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.on("payment.failed", function (response) {
+        console.error("Payment failed", response);
+        setStep("form");
+        showPopup("Payment failed. Please try again.");
+      });
       razorpayInstance.open();
     } catch (err) {
       console.error(err);
       setStep("form");
-      showPopup(err.response?.data?.message || err.message || "Failed to start payment. Please try again.");
+      showPopup(getErrorMessage(err, "Failed to start payment. Please try again."));
     }
   };
 
