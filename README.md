@@ -151,6 +151,52 @@ cd Client
 npm run dev
 ```
 
+## Running With Docker
+
+This project includes Docker support, so you can run the backend and frontend together without starting each app manually.
+
+### Prerequisites
+
+- Docker Desktop installed and running
+- A MongoDB connection string available in `Server/.env`
+- Frontend Vite variables available in `Client/.env`
+
+### 1. Create environment files
+
+Backend: `Server/.env`
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_key
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+```
+
+Frontend: `Client/.env`
+
+```env
+VITE_API_URL=http://localhost:5000
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+```
+
+### 2. Start the app with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+### 3. Open the app
+
+- Frontend: http://localhost:5173
+- Backend: http://localhost:5000
+
+### Notes
+
+- The frontend container runs Vite in dev mode, so it still needs the `VITE_` variables at startup.
+- The backend container reads its variables from `Server/.env`.
+- If you change any environment values, restart the compose stack.
+
 ## API Overview
 
 The backend exposes routes for:
