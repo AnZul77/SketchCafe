@@ -1,179 +1,236 @@
-☕ SketchCafe
+# SketchCafe
 
-A modern full-stack restaurant ordering platform with secure payments, authentication, admin management, and production deployment.
+A modern full-stack restaurant ordering platform with authentication, admin management, table-based ordering, reservations, and Razorpay payments.
 
-Built to learn real-world full-stack engineering concepts including authentication, deployment, payment gateways, API architecture, protected routes, and modern frontend/backend workflows.
+Built to practice real-world full-stack engineering concepts including JWT auth, protected routes, deployment, payment gateways, API design, and frontend/backend workflows.
 
-🚀 Live Demo
-Frontend
-https://sketch-cafe-beta.vercel.app
-Backend API
-https://api.sketchcafe.anshulgupta7.me
-✨ Features
-👤 Authentication
-User registration & login
-JWT authentication
-Protected routes
-Persistent sessions
-🍽️ Restaurant Ordering
-Browse menu items
-Add to cart
-Place table orders
-Order history
-Reservation support
-💳 Razorpay Payments
-Razorpay payment gateway integration
-Secure order creation
-Payment verification using signatures
-Payment status tracking
-Multiple payment methods
-🛡️ Security
-Arcjet protection
-Secure environment variables
-Payment signature verification
-Protected backend APIs
-🧑‍💼 Admin Features
-Admin dashboard
-Order management
-Reservation management
-Payment tracking
-🛠️ Tech Stack
-Frontend
-React
-Vite
-Tailwind CSS
-Axios
-Context API
-Backend
-Node.js
-Express.js
-MongoDB
-Mongoose
-JWT Authentication
-Razorpay SDK
-Deployment
-Vercel (Frontend)
-Render (Backend)
-Namecheap Domain
-Custom API Subdomain
-📂 Project Structure
+## Live Demo
+
+- Frontend: https://sketch-cafe-beta.vercel.app
+- Backend API: https://api.sketchcafe.anshulgupta7.me
+
+## Features
+
+### Authentication
+
+- User registration and login
+- JWT authentication
+- Protected routes
+- Persistent sessions
+
+### Restaurant Ordering
+
+- Browse menu items
+- Add items to cart
+- Place table orders
+- View order history
+- Reservation support
+
+### Razorpay Payments
+
+- Razorpay checkout integration
+- Secure order creation on the server
+- Payment signature verification
+- Payment status tracking
+- Support for multiple payment methods, including UPI
+
+### Security
+
+- Arcjet protection
+- Secure environment variables
+- Payment signature verification
+- Protected backend APIs
+
+### Admin Features
+
+- Admin dashboard
+- Menu management
+- Order management
+- Reservation management
+- Payment tracking
+
+## Tech Stack
+
+### Frontend
+
+- React
+- Vite
+- Tailwind CSS
+- Axios
+- Context API
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT authentication
+- Razorpay SDK
+
+### Deployment
+
+- Vercel for frontend
+- Render for backend
+- Namecheap domain
+- Custom API subdomain
+
+## Project Structure
+
+```text
 SketchCafe/
-│
 ├── Client/
 │   ├── src/
 │   ├── public/
 │   └── vite.config.js
-│
 ├── Server/
 │   ├── src/
-│   │   ├── routes/
+│   │   ├── routers/
 │   │   ├── models/
 │   │   ├── controllers/
 │   │   └── middleware/
-│   │
-│   └── server.js
-│
+│   └── src/server.js
 └── README.md
-⚙️ Environment Variables
-Frontend (Client/.env)
+```
+
+## Environment Variables
+
+### Frontend: `Client/.env`
+
+```env
 VITE_API_URL=https://api.sketchcafe.anshulgupta7.me
-VITE_RAZORPAY_KEY_ID=your_razorpay_test_key
-Backend (Server/.env)
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+```
+
+### Backend: `Server/.env`
+
+```env
 PORT=5000
-
-MONGO_URI=your_mongodb_connection
-
+MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-
 RAZORPAY_KEY_ID=your_razorpay_key
 RAZORPAY_KEY_SECRET=your_razorpay_secret
-🧪 Running Locally
-1. Clone Repository
+```
+
+## Running Locally
+
+### 1. Clone the repository
+
+```bash
 git clone <your-repo-url>
 cd SketchCafe
-2. Install Dependencies
-Frontend
+```
+
+### 2. Install dependencies
+
+Frontend:
+
+```bash
 cd Client
 npm install
-Backend
-cd Server
+```
+
+Backend:
+
+```bash
+cd ../Server
 npm install
-3. Start Backend
+```
+
+### 3. Start the backend
+
+```bash
 cd Server
 npm run dev
-4. Start Frontend
+```
+
+### 4. Start the frontend
+
+```bash
 cd Client
 npm run dev
-💳 Razorpay Test Payments
-Test Card
-4111 1111 1111 1111
+```
 
-Expiry:
+## API Overview
 
-Any future date
+The backend exposes routes for:
 
-CVV:
+- Authentication
+- Menu management
+- Orders
+- Reservations
+- Razorpay payment creation and verification
 
-Any 3 digits
+### Payment routes
 
-OTP:
+- `POST /api/payment/create-order`
+- `POST /api/payment/verify`
+- `GET /api/payment/ping`
 
-1234
-Test UPI
-success@razorpay
-🔐 Payment Verification Flow
-Frontend
-   ↓
-Create Razorpay Order
-   ↓
-Razorpay Checkout
-   ↓
-Payment Success
-   ↓
-Backend Signature Verification
-   ↓
-Store Order in MongoDB
-📚 What I Learned
+## Razorpay Payment Flow
 
-This project helped me learn:
+1. The frontend sends the payable amount to the backend.
+2. The backend creates a Razorpay order in INR.
+3. Razorpay Checkout opens in the browser.
+4. The customer completes payment.
+5. The frontend sends the Razorpay response back to the backend.
+6. The backend verifies the signature.
+7. The order is stored in MongoDB.
 
-Full-stack application architecture
-Authentication & authorization
-Production deployment
-API integrations
-Payment gateways
-Environment variables
-Secure backend design
-MongoDB & Mongoose
-Frontend state management
-Debugging production issues
-Domain & subdomain configuration
-🚧 Future Improvements
-Realtime order tracking
-WebSockets
-QR table ordering
-Email receipts
-Analytics dashboard
-Redis caching
-Docker support
-PostgreSQL migration
-Better admin analytics
-📸 Screenshots
+## Test Payments
 
-Add screenshots here
+### UPI
 
-🧑‍💻 Author
+- `success@razorpay` for a successful test payment
+- `failure@razorpay` for a failed test payment
+
+### Card
+
+Use Razorpay test card details from the Razorpay dashboard documentation. The exact behavior depends on whether your account is in test mode and whether the selected card network is supported.
+
+## What I Learned
+
+- Full-stack application architecture
+- Authentication and authorization
+- Production deployment
+- API integrations
+- Payment gateways
+- Environment variables
+- Secure backend design
+- MongoDB and Mongoose
+- Frontend state management
+- Debugging production issues
+- Domain and subdomain configuration
+
+## Future Improvements
+
+- Realtime order tracking
+- WebSockets
+- QR table ordering
+- Email receipts
+- Analytics dashboard
+- Redis caching
+- Docker support
+- PostgreSQL migration
+
+## Screenshots
+
+Add screenshots here.
+
+## Author
 
 Anshul Gupta
 
-⭐ Acknowledgements
-Razorpay
-Render
-Vercel
-MongoDB
-Tailwind CSS
-Express.js
-React
-📜 License
+## Acknowledgements
+
+- Razorpay
+- Render
+- Vercel
+- MongoDB
+- Tailwind CSS
+- Express.js
+- React
+
+## License
 
 MIT License
