@@ -6,7 +6,7 @@ Built to practice real-world full-stack engineering concepts including JWT auth,
 
 ## Live Demo
 
-- Frontend: https://sketch-cafe-beta.vercel.app
+- Frontend: https://sketchcafe.anshulgupta7.me
 - Backend API: https://api.sketchcafe.anshulgupta7.me
 
 ## Features
