@@ -28,6 +28,7 @@ export default function Checkout() {
 
       const response = await createRazorpayOrder(payableAmount);
       const razorpayOrderId = response.data.orderId;
+      console.log("RAZORPAY KEY:", import.meta.env.VITE_RAZORPAY_KEY_ID);
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
@@ -37,7 +38,7 @@ export default function Checkout() {
         description: `Table ${formData.tableNumber} order`,
         order_id: razorpayOrderId,
         prefill: user
-          ? {
+          ? {   
               name: user.name,
               email: user.email,
             }
