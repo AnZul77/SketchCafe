@@ -39,6 +39,17 @@ router.post("/create-order", async (req, res) => {
   }
 });
 
+// Health / diagnostic endpoint to verify router is mounted in production
+router.get("/ping", (req, res) => {
+  try {
+    console.log("/api/payment/ping hit from", req.ip);
+    res.status(200).json({ ok: true, envSet: !!process.env.RAZORPAY_KEY_ID });
+  } catch (err) {
+    console.error("ping error", err);
+    res.status(500).json({ ok: false });
+  }
+});
+
 router.post("/verify", async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
