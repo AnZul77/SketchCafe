@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { DeckleCard } from "../components/VicoloBase";
+import API, { createRazorpayOrder, loadRazorpayScript, verifyRazorpayPayment } from "../services/api";
 
 export default function Checkout() {
   const { cart, placeOrder, orders, user, showPopup } = useApp();
@@ -12,16 +13,73 @@ export default function Checkout() {
     tableNumber: ""
   });
 
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const payableAmount = Number((subtotal * 1.1).toFixed(2));
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setStep("processing");
     try {
-      await placeOrder(formData.tableNumber);
-      setStep("success");
+      const scriptLoaded = await loadRazorpayScript();
+
+      if (!scriptLoaded || !window.Razorpay) {
+        throw new Error("Razorpay checkout failed to load.");
+      }
+
+      const response = await createRazorpayOrder(payableAmount);
+      const razorpayOrderId = response.data.orderId;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: Math.round(payableAmount * 100),
+        currency: "INR",
+        name: "Vicolo",
+        description: `Table ${formData.tableNumber} order`,
+        order_id: razorpayOrderId,
+        prefill: user
+          ? {
+              name: user.name,
+              email: user.email,
+            }
+          : undefined,
+        theme: {
+          color: "#1b1c19",
+        },
+        modal: {
+          ondismiss: () => {
+            setStep("form");
+            showPopup("Payment was cancelled before confirmation.");
+          },
+        },
+        handler: async (razorpayResponse) => {
+          try {
+            const verifyRes = await verifyRazorpayPayment({
+              razorpay_order_id: razorpayResponse.razorpay_order_id,
+              razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+              razorpay_signature: razorpayResponse.razorpay_signature,
+            });
+
+            if (verifyRes.data?.success) {
+              await placeOrder(formData.tableNumber,response);
+              setStep("success");
+            } else {
+              setStep("form");
+              showPopup(verifyRes.data?.message || "Payment verification failed.");
+            }
+          } catch (orderError) {
+            console.error(orderError);
+            setStep("form");
+            showPopup(orderError.response?.data?.message || "Payment verification or order creation failed.");
+          }
+        },
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
     } catch (err) {
       console.error(err);
       setStep("form");
-      showPopup(err.response?.data?.message || "Failed to place order. Please try again.");
+      showPopup(err.response?.data?.message || err.message || "Failed to start payment. Please try again.");
     }
   };
 
@@ -51,7 +109,7 @@ export default function Checkout() {
               <header className="text-center">
                 <span className="font-script text-4xl text-vicolo-ochre mb-2 block">The Final Sketch</span>
                 <h1 className="font-headline text-6xl font-bold text-vicolo-ink uppercase tracking-tighter">Inscription</h1>
-                <div className="h-[2px] w-24 bg-vicolo-ochre/30 mx-auto mt-4" />
+                <div className="h-0.5 w-24 bg-vicolo-ochre/30 mx-auto mt-4" />
                 
                 {user && (
                   <div className="mt-8 flex items-center justify-center gap-4">
@@ -91,9 +149,9 @@ export default function Checkout() {
                     <button 
                       type="submit" 
                       disabled={!formData.tableNumber}
-                      className="w-full py-6 bg-vicolo-ink text-vicolo-paper font-headline uppercase tracking-[0.5em] text-sm hover:bg-vicolo-ochre disabled:opacity-20 disabled:pointer-events-none transition-all shadow-xl rough-border skew-x-[-1deg]"
+                      className="w-full py-6 bg-vicolo-ink text-vicolo-paper font-headline uppercase tracking-[0.5em] text-sm hover:bg-vicolo-ochre disabled:opacity-20 disabled:pointer-events-none transition-all shadow-xl rough-border -skew-x-1"
                     >
-                      Seal the Order
+                      Pay ₹{payableAmount.toFixed(0)} and Seal the Order
                     </button>
                     {!formData.tableNumber && (
                       <span className="font-script text-xs text-vicolo-ochre mt-4 block text-center opacity-60">Please select a table to begin the brewing process...</span>
@@ -141,7 +199,7 @@ export default function Checkout() {
 
               <DeckleCard className="p-8 md:p-12 shadow-2xl skew-x-[-0.5deg] border-2 border-vicolo-ochre/20">
                 <div className="flex flex-col md:flex-row justify-between gap-12">
-                   <div className="space-y-8 flex-grow">
+                   <div className="space-y-8 grow">
                       <div className="flex justify-between items-start">
                         <div>
                           <span className="font-headline text-[10px] uppercase tracking-[0.4em] text-vicolo-ink/40 block mb-2">Order ID</span>
@@ -166,7 +224,7 @@ export default function Checkout() {
                              className="h-full bg-vicolo-ochre shadow-[0_0_15px_rgba(227,160,50,0.5)] transition-all duration-1000"
                            />
                            {/* Ink droplets pattern on bar */}
-                           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#1b1c19_1px,transparent_1px)] bg-[length:10px_10px]" />
+                           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#1b1c19_1px,transparent_1px)] bg-size-[10px_10px]" />
                         </div>
                         <div className="flex justify-between text-[8px] uppercase tracking-widest text-vicolo-ink/20 font-headline">
                           <span>Pending</span>
@@ -185,7 +243,7 @@ export default function Checkout() {
                       ))}
                       <div className="border-t border-vicolo-ink/10 pt-4 flex justify-between">
                         <span className="font-headline font-bold text-vicolo-ink">Total</span>
-                        <span className="font-headline text-xl font-bold text-vicolo-ochre">€{latestOrder.totalAmount.toFixed(2)}</span>
+                        <span className="font-headline text-xl font-bold text-vicolo-ochre">₹{latestOrder.totalAmount.toFixed(0)}</span>
                       </div>
                    </div>
                 </div>

@@ -3,7 +3,8 @@ import MenuItem from "../models/Menu.js";
 
 export const createOrder = async (req, res) => {
   try {
-    const { items, tableNumber } = req.body;
+    const { items, tableNumber, paymentId, razorpayOrderId, paymentStatus } =
+      req.body;
     let totalAmount = 0;
     if (!items || items.length === 0) {
       return res.status(400).json({
@@ -27,6 +28,9 @@ export const createOrder = async (req, res) => {
       items,
       tableNumber,
       totalAmount,
+      paymentId,
+      razorpayOrderId,
+      paymentStatus: paymentStatus || "pending",
     });
     await newOrder.save();
     res
@@ -64,7 +68,7 @@ export const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const orderId = req.params.id;
-    
+
     if (!["pending", "preparing", "served", "cancelled"].includes(status)) {
       return res.status(400).json({ message: "Invalid status" });
     }
@@ -72,7 +76,7 @@ export const updateOrderStatus = async (req, res) => {
     const order = await Order.findByIdAndUpdate(
       orderId,
       { status },
-      { new: true }
+      { new: true },
     );
 
     if (!order) {

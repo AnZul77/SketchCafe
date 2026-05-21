@@ -87,7 +87,7 @@ const AdminReservations = () => {
               )}
             </div>
 
-            <div className="h-6 w-[1px] bg-vicolo-outline/30 hidden md:block" />
+            <div className="h-6 w-px bg-vicolo-outline/30 hidden md:block" />
 
             <div className="flex items-center gap-2">
               <span className="text-xs uppercase tracking-wider text-vicolo-ink-wash">Sort:</span>
@@ -129,7 +129,7 @@ const AdminReservations = () => {
                     )}
                   </div>
                   
-                  <div className="flex flex-col gap-2 min-w-[150px]">
+                  <div className="flex flex-col gap-2 min-w-37.5">
                     <span className={`text-xs uppercase tracking-wider font-bold mb-2 ${
                       res.status === 'pending' ? 'text-vicolo-ochre' :
                       res.status === 'confirmed' ? 'text-green-600' : 'text-red-500'

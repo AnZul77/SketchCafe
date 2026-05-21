@@ -121,7 +121,7 @@ export default function Profile() {
                           <h3 className="font-headline text-4xl font-bold text-vicolo-ink tracking-tight">#{order._id?.slice(-6)}</h3>
                         </div>
                         <div className="text-right">
-                          <span className="font-script text-4xl text-vicolo-ochre tracking-tighter block leading-none">€{order.totalAmount?.toFixed(2)}</span>
+                          <span className="font-script text-4xl text-vicolo-ochre tracking-tighter block leading-none">₹{order.totalAmount?.toFixed(0)}</span>
                           <span className="font-headline text-[8px] tracking-[0.4em] uppercase text-vicolo-ink/20 font-bold block mt-2 italic">{order.status}</span>
                         </div>
                       </div>

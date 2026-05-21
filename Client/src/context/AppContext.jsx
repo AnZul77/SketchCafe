@@ -76,14 +76,16 @@ export const AppProvider = ({ children }) => {
     return res.data;
   };
 
-  const placeOrder = async (tableNumber) => {
+  const placeOrder = async (tableNumber,paymentData) => {
     if (cart.length === 0) return;
     const items = cart.map(item => ({
       menuItem: item._id,
       quantity: item.quantity
     }));
     
-    const res = await API.post("/orders", { items, tableNumber });
+    const res = await API.post("/orders", { items, tableNumber,paymentId: paymentData.razorpay_payment_id,
+  razorpayOrderId: paymentData.razorpay_order_id,
+  paymentStatus: "paid", });
     clearCart();
     await fetchMyOrders();
     return res.data.order;
@@ -113,8 +115,8 @@ export const AppProvider = ({ children }) => {
       
       {/* Global Error/Notification Popup */}
       {popup && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] pointer-events-none">
-          <div className="bg-vicolo-ink text-vicolo-paper px-8 py-4 shadow-2xl flex items-center gap-4 skew-x-[-2deg] border border-vicolo-ochre/20">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-9999 pointer-events-none">
+          <div className="bg-vicolo-ink text-vicolo-paper px-8 py-4 shadow-2xl flex items-center gap-4 -skew-x-2 border border-vicolo-ochre/20">
             <span className="font-headline text-xs uppercase tracking-[0.2em]">{popup}</span>
           </div>
         </div>

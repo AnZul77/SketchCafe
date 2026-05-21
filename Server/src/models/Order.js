@@ -34,6 +34,18 @@ const menuItemSchema = new mongoose.Schema(
       enum: ["pending", "preparing", "served", "cancelled"],
       default: "pending",
     },
+    paymentId: {
+      type: String,
+    },
+
+    paymentStatus: {
+      type: String,
+      default: "pending",
+    },
+
+    razorpayOrderId: {
+      type: String,
+    },
   },
   {
     timestamps: true,

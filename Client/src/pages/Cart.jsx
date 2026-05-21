@@ -69,7 +69,7 @@ export default function Cart() {
                   
                   <div className="text-right min-w-[80px]">
                     <span className="font-script text-2xl text-vicolo-ochre tracking-tighter block leading-none">
-                      €{(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(0)}
                     </span>
                     <button 
                       onClick={() => removeFromCart(item._id)}
@@ -86,19 +86,19 @@ export default function Cart() {
           <div className="mt-16 pt-10 border-t-2 border-vicolo-ink/10 space-y-6">
             <div className="flex justify-between items-end">
               <span className="font-headline text-sm tracking-[0.3em] uppercase text-vicolo-ink-wash">Subtotal</span>
-              <span className="font-headline text-2xl font-bold text-vicolo-ink">€{subtotal.toFixed(2)}</span>
+              <span className="font-headline text-2xl font-bold text-vicolo-ink">₹{subtotal.toFixed(0)}</span>
             </div>
             <div className="flex justify-between items-end">
               <div className="flex items-center gap-2">
                 <span className="font-headline text-sm tracking-[0.3em] uppercase text-vicolo-ink-wash">Taxes</span>
                 <span className="font-script text-xl text-vicolo-ochre/40 rotate-6 inline-block">Roma Tax</span>
               </div>
-              <span className="font-headline text-2xl font-bold text-vicolo-ink">€{(subtotal * 0.1).toFixed(2)}</span>
+              <span className="font-headline text-2xl font-bold text-vicolo-ink">₹{(subtotal * 0.1).toFixed(0)}</span>
             </div>
             <div className="h-4 w-full bg-[linear-gradient(to_right,transparent_2px,#1b1c19_2px)] bg-[length:4px_1px] opacity-20" />
             <div className="flex justify-between items-baseline pt-4">
               <span className="font-headline text-2xl tracking-[0.1em] font-bold text-vicolo-ink uppercase">Grand Total</span>
-              <span className="font-headline text-6xl font-bold text-vicolo-ochre tracking-tighter">€{(subtotal * 1.1).toFixed(2)}</span>
+              <span className="font-headline text-6xl font-bold text-vicolo-ochre tracking-tighter">₹{(subtotal * 1.1).toFixed(0)}</span>
             </div>
           </div>
         </DeckleCard>

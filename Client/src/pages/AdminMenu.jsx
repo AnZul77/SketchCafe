@@ -105,7 +105,7 @@ const AdminMenu = () => {
           {menuItems.map(item => (
             <motion.div key={item._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 border border-vicolo-outline/30 bg-vicolo-paper flex justify-between items-center gap-4">
               <div>
-                <h3 className="font-headline text-lg">{item.name} <span className="text-vicolo-ochre ml-2">${item.price}</span></h3>
+                <h3 className="font-headline text-lg">{item.name} <span className="text-vicolo-ochre ml-2">₹{item.price}</span></h3>
                 <p className="text-sm text-vicolo-ink-wash">{item.category} | {item.available ? 'Available' : 'Unavailable'}</p>
               </div>
               <div className="flex gap-4">

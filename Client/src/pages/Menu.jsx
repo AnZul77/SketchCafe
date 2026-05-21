@@ -87,7 +87,7 @@ export default function Menu() {
                         <h3 className="font-headline text-xl font-bold text-vicolo-ink group-hover:text-vicolo-ochre transition-colors">
                           {item.name}
                         </h3>
-                        <span className="font-script text-xl text-vicolo-ochre">€{Number(item.price).toFixed(2)}</span>
+                        <span className="font-script text-xl text-vicolo-ochre">₹{Number(item.price).toFixed(0)}</span>
                       </div>
                       <p className="font-body text-vicolo-ink-wash leading-relaxed text-sm mb-4">
                         {item.description}
