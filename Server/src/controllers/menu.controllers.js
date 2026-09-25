@@ -12,14 +12,35 @@ export const getMenuItems = async (req, res) => {
   }
 };
 
+const getDefaultImage = (category) => {
+  if (category === "espresso") return "/assets/menu_espresso.png";
+  if (category === "brewed") return "/assets/menu_brewed.png";
+  return "/assets/menu_signature.png";
+};
+
 export const addMenuItem = async (req, res) => {
   try {
     const { name, description, price, category, imageUrl, available } = req.body;
-    const newItem = new MenuItem({ name, description, price, category, imageUrl, available });
+    if (!name || price === undefined || !category) {
+      return res.status(400).json({ message: "Name, price, and category are required" });
+    }
+
+    const finalImageUrl = (imageUrl && typeof imageUrl === "string" && imageUrl.trim()) 
+      ? imageUrl.trim() 
+      : getDefaultImage(category);
+
+    const newItem = new MenuItem({
+      name: name.trim(),
+      description: description ? description.trim() : "",
+      price: Number(price),
+      category: category.toLowerCase().trim(),
+      imageUrl: finalImageUrl,
+      available: available !== undefined ? Boolean(available) : true,
+    });
     await newItem.save();
     res.status(201).json({ message: "Menu item created successfully", item: newItem });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message || "Failed to create menu item" });
   }
 };
 
@@ -27,9 +48,21 @@ export const updateMenuItem = async (req, res) => {
   try {
     const itemId = req.params.id;
     const { name, description, price, category, imageUrl, available } = req.body;
+
+    const finalImageUrl = (imageUrl && typeof imageUrl === "string" && imageUrl.trim()) 
+      ? imageUrl.trim() 
+      : getDefaultImage(category);
+
     const updatedItem = await MenuItem.findByIdAndUpdate(
       itemId,
-      { name, description, price, category, imageUrl, available },
+      {
+        name: name ? name.trim() : undefined,
+        description: description ? description.trim() : undefined,
+        price: price !== undefined ? Number(price) : undefined,
+        category: category ? category.toLowerCase().trim() : undefined,
+        imageUrl: finalImageUrl,
+        available: available !== undefined ? Boolean(available) : undefined,
+      },
       { new: true }
     );
     if (!updatedItem) {
@@ -37,7 +70,7 @@ export const updateMenuItem = async (req, res) => {
     }
     res.status(200).json({ message: "Menu item updated", item: updatedItem });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message || "Failed to update menu item" });
   }
 };
 

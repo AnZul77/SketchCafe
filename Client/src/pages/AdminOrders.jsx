@@ -122,9 +122,10 @@ const AdminOrders = () => {
                       </span>
                     </div>
                     <p className="text-sm text-vicolo-ink-wash">Table: {order.tableNumber}</p>
-                    <p className="text-sm text-vicolo-ink-wash">Total: ${order.totalAmount.toFixed(2)}</p>
+                    <p className="text-sm text-vicolo-ink-wash">Total: ₹{Number(order.totalAmount || 0).toFixed(2)}</p>
                     <p className="text-sm text-vicolo-ink-wash mt-2">
                       User: {order.user?.name || "Unknown"} ({order.user?.email || "N/A"})
+                      {order.phone && <span className="ml-2 font-headline text-vicolo-ink">| Tel: +91 {order.phone}</span>}
                     </p>
                     <div className="mt-3 text-sm">
                       {order.items.map((it, idx) => (

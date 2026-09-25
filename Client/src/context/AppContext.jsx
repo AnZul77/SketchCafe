@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import API from "../services/api";
 
 const AppContext = createContext();
@@ -6,6 +6,7 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null); // { name, email, avatar }
+  const [authLoading, setAuthLoading] = useState(true);
   const [reservations, setReservations] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -19,7 +20,13 @@ export const AppProvider = ({ children }) => {
         .catch(err => {
           console.error("Failed to restore session", err);
           localStorage.removeItem("token");
+          setUser(null);
+        })
+        .finally(() => {
+          setAuthLoading(false);
         });
+    } else {
+      setAuthLoading(false);
     }
   }, []);
 
@@ -45,14 +52,14 @@ export const AppProvider = ({ children }) => {
 
   const clearCart = () => setCart([]);
 
-  const fetchMyReservations = async () => {
+  const fetchMyReservations = useCallback(async () => {
     try {
       const res = await API.get("/reservations/my");
       setReservations(res.data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
 
   const [popup, setPopup] = useState(null);
 
@@ -61,14 +68,14 @@ export const AppProvider = ({ children }) => {
     setTimeout(() => setPopup(null), 5000);
   };
 
-  const fetchMyOrders = async () => {
+  const fetchMyOrders = useCallback(async () => {
     try {
       const res = await API.get("/orders/my");
       setOrders(res.data);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
 
   const addReservation = async (resData) => {
     const res = await API.post("/reservations", resData);
@@ -76,16 +83,21 @@ export const AppProvider = ({ children }) => {
     return res.data;
   };
 
-  const placeOrder = async (tableNumber,paymentData) => {
+  const placeOrder = async (tableNumber, paymentData, phone) => {
     if (cart.length === 0) return;
     const items = cart.map(item => ({
       menuItem: item._id,
       quantity: item.quantity
     }));
     
-    const res = await API.post("/orders", { items, tableNumber,paymentId: paymentData.razorpay_payment_id,
-  razorpayOrderId: paymentData.razorpay_order_id,
-  paymentStatus: "paid", });
+    const res = await API.post("/orders", { 
+      items, 
+      tableNumber,
+      phone,
+      paymentId: paymentData?.razorpay_payment_id,
+      razorpayOrderId: paymentData?.razorpay_order_id,
+      razorpaySignature: paymentData?.razorpay_signature,
+    });
     clearCart();
     await fetchMyOrders();
     return res.data.order;
@@ -106,7 +118,7 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider value={{
       cart, addToCart, removeFromCart, updateQuantity, clearCart,
-      user, login, logout,
+      user, authLoading, login, logout,
       reservations, addReservation, fetchMyReservations,
       orders, placeOrder, fetchMyOrders,
       showPopup

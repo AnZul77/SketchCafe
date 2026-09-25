@@ -250,18 +250,11 @@ Use Razorpay test card details from the Razorpay dashboard documentation. The ex
 
 ## Future Improvements
 
-- Realtime order tracking
-- WebSockets
+- Realtime order tracking via WebSockets
 - QR table ordering
-- Email receipts
-- Analytics dashboard
+- Automated email receipts
 - Redis caching
-- Docker support
 - PostgreSQL migration
-
-## Screenshots
-
-Add screenshots here.
 
 ## Author
 

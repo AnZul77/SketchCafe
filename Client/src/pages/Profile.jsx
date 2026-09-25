@@ -14,11 +14,20 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    if (!user) navigate("/login");
-    else {
-      fetchMyReservations();
-      fetchMyOrders();
+    if (!user) {
+      navigate("/login");
+      return;
     }
+
+    fetchMyReservations();
+    fetchMyOrders();
+
+    // Poll orders every 12 seconds to keep the live kitchen status journey up-to-date
+    const intervalId = setInterval(() => {
+      fetchMyOrders();
+    }, 12000);
+
+    return () => clearInterval(intervalId);
   }, [user, navigate, fetchMyReservations, fetchMyOrders]);
 
   if (!user) return null;

@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ const createRazorpayClient = () => {
   });
 };
 
-router.post("/create-order", async (req, res) => {
+router.post("/create-order", authMiddleware, async (req, res) => {
   try {
     const { amount } = req.body;
     const razorpay = createRazorpayClient();
@@ -60,7 +61,7 @@ router.get("/ping", (req, res) => {
   }
 });
 
-router.post("/verify", async (req, res) => {
+router.post("/verify", authMiddleware, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;

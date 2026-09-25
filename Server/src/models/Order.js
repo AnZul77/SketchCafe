@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const menuItemSchema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,6 +24,17 @@ const menuItemSchema = new mongoose.Schema(
     tableNumber: {
       type: String,
       required: true,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    subtotal: {
+      type: Number,
+    },
+    tax: {
+      type: Number,
     },
     totalAmount: {
       type: Number,
@@ -36,15 +47,20 @@ const menuItemSchema = new mongoose.Schema(
     },
     paymentId: {
       type: String,
+      trim: true,
     },
-
     paymentStatus: {
       type: String,
+      enum: ["pending", "paid", "failed"],
       default: "pending",
     },
-
     razorpayOrderId: {
       type: String,
+      trim: true,
+    },
+    razorpaySignature: {
+      type: String,
+      trim: true,
     },
   },
   {
@@ -52,5 +68,5 @@ const menuItemSchema = new mongoose.Schema(
   },
 );
 
-const Order = mongoose.model("Order", menuItemSchema);
+const Order = mongoose.model("Order", orderSchema);
 export default Order;

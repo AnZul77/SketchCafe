@@ -8,9 +8,11 @@ import { createRazorpayOrder, loadRazorpayScript, verifyRazorpayPayment } from "
 export default function Checkout() {
   const { cart, placeOrder, orders, user, showPopup } = useApp();
   const [step, setStep] = useState("form");
+  const [placedOrderDetails, setPlacedOrderDetails] = useState(null);
 
   const [formData, setFormData] = useState({
-    tableNumber: ""
+    tableNumber: "",
+    phone: "",
   });
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -22,6 +24,11 @@ export default function Checkout() {
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
+    if (!formData.phone || formData.phone.length !== 10) {
+      showPopup("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
     setStep("processing");
     try {
       const scriptLoaded = await loadRazorpayScript();
@@ -45,7 +52,7 @@ export default function Checkout() {
         prefill: {
           name: user?.name || "Guest",
           email: user?.email || "guest@test.com",
-          contact: "+919999905408",
+          contact: formData.phone ? `+91${formData.phone}` : undefined,
         },
         method: "upi",
         theme: {
@@ -59,7 +66,8 @@ export default function Checkout() {
               throw new Error("Payment verification failed.");
             }
 
-            await placeOrder(formData.tableNumber, paymentResponse);
+            const confirmed = await placeOrder(formData.tableNumber, paymentResponse, formData.phone);
+            setPlacedOrderDetails(confirmed);
             setStep("success");
             showPopup("Payment successful. Your order is confirmed.");
           } catch (verificationErr) {
@@ -89,7 +97,7 @@ export default function Checkout() {
     }
   };
 
-  const latestOrder = orders[0];
+  const latestOrder = placedOrderDetails || orders[0];
 
   if (cart.length === 0 && step === "form") {
     return (
@@ -151,16 +159,37 @@ export default function Checkout() {
                     <input type="hidden" required value={formData.tableNumber} />
                   </div>
 
+                  <div className="space-y-4 pt-4 border-t border-vicolo-ink/10">
+                    <label className="font-headline text-[10px] uppercase tracking-[0.4em] text-vicolo-ink/40 block">Contact Phone Number (For UPI & Status)</label>
+                    <div className="flex items-center gap-3 bg-transparent border-b-2 border-vicolo-ink/10 focus-within:border-vicolo-ochre transition-all pb-1">
+                      <span className="font-headline text-lg text-vicolo-ink/40">+91</span>
+                      <input
+                        required
+                        type="tel"
+                        maxLength="10"
+                        placeholder="10-digit mobile number"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
+                        className="w-full bg-transparent outline-none font-headline text-lg text-vicolo-ink placeholder:text-vicolo-ink/20"
+                      />
+                    </div>
+                    {formData.phone && formData.phone.length < 10 && (
+                      <span className="font-body text-xs text-red-600 block">Please enter a valid 10-digit number ({10 - formData.phone.length} more needed).</span>
+                    )}
+                  </div>
+
                   <div className="pt-8">
                     <button 
                       type="submit" 
-                      disabled={!formData.tableNumber}
+                      disabled={!formData.tableNumber || formData.phone.length !== 10}
                       className="w-full py-6 bg-vicolo-ink text-vicolo-paper font-headline uppercase tracking-[0.5em] text-sm hover:bg-vicolo-ochre disabled:opacity-20 disabled:pointer-events-none transition-all shadow-xl rough-border -skew-x-1"
                     >
                       Pay ₹{payableAmount.toFixed(0)} and Seal the Order
                     </button>
-                    {!formData.tableNumber && (
-                      <span className="font-script text-xs text-vicolo-ochre mt-4 block text-center opacity-60">Please select a table to begin the brewing process...</span>
+                    {(!formData.tableNumber || formData.phone.length !== 10) && (
+                      <span className="font-script text-xs text-vicolo-ochre mt-4 block text-center opacity-60">
+                        {!formData.tableNumber ? "Please select a table to begin the brewing process..." : "Please enter your 10-digit contact number..."}
+                      </span>
                     )}
                   </div>
                 </form>

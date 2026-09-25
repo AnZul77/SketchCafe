@@ -86,6 +86,7 @@ export default function Reservations() {
                 <input 
                   required
                   type="date" 
+                  min={new Date().toISOString().split("T")[0]}
                   value={formData.date}
                   onChange={(e) => setFormData({...formData, date: e.target.value})}
                   className="w-full bg-transparent border-b border-vicolo-ink/20 py-4 font-body focus:border-vicolo-ochre outline-none" 

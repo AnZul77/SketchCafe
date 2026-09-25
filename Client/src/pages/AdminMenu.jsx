@@ -83,7 +83,7 @@ const AdminMenu = () => {
               <option value="brewed">brewed</option>
               <option value="signatures">signatures</option>
             </select>
-            <input type="text" placeholder="Image URL (optional)" value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="bg-transparent border-b border-vicolo-ink/30 pb-2 focus:outline-none focus:border-vicolo-ochre" />
+            <input type="text" placeholder="Image URL (optional — defaults to category visual)" value={formData.imageUrl} onChange={e => setFormData({...formData, imageUrl: e.target.value})} className="bg-transparent border-b border-vicolo-ink/30 pb-2 focus:outline-none focus:border-vicolo-ochre" />
             <label className="flex items-center gap-2 text-sm text-vicolo-ink-wash">
               <input type="checkbox" checked={formData.available} onChange={e => setFormData({...formData, available: e.target.checked})} className="accent-vicolo-ochre" />
               Available
@@ -104,9 +104,21 @@ const AdminMenu = () => {
         <div className="space-y-4">
           {menuItems.map(item => (
             <motion.div key={item._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 border border-vicolo-outline/30 bg-vicolo-paper flex justify-between items-center gap-4">
-              <div>
-                <h3 className="font-headline text-lg">{item.name} <span className="text-vicolo-ochre ml-2">${item.price}</span></h3>
-                <p className="text-sm text-vicolo-ink-wash">{item.category} | {item.available ? 'Available' : 'Unavailable'}</p>
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-vicolo-surface rounded overflow-hidden shrink-0 border border-vicolo-outline/20">
+                  <img
+                    src={item.imageUrl || (item.category === "espresso" ? "/assets/menu_espresso.png" : item.category === "brewed" ? "/assets/menu_brewed.png" : "/assets/menu_signature.png")}
+                    alt={item.name}
+                    onError={(e) => {
+                      e.currentTarget.src = item.category === "espresso" ? "/assets/menu_espresso.png" : item.category === "brewed" ? "/assets/menu_brewed.png" : "/assets/menu_signature.png";
+                    }}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-headline text-lg">{item.name} <span className="text-vicolo-ochre ml-2">₹{item.price}</span></h3>
+                  <p className="text-sm text-vicolo-ink-wash">{item.category} | {item.available ? 'Available' : 'Unavailable'}</p>
+                </div>
               </div>
               <div className="flex gap-4">
                 {deletingId === item._id ? (

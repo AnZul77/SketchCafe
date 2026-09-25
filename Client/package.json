@@ -12,7 +12,6 @@
   "dependencies": {
     "@fontsource/material-symbols-outlined": "^5.2.39",
     "@tailwindcss/vite": "^4.2.2",
-    "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
     "axios": "^1.16.1",
     "framer-motion": "^12.38.0",
